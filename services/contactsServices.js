@@ -8,12 +8,13 @@ import { nanoid } from "nanoid";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const contactsPath = path.join(__dirname, "db", "contacts.json"); // Шлях до файлу з контактами
+const contactsPath = path.join(__dirname, "..", "db", "contacts.json"); // Шлях до файлу з контактами
 
 export async function listContacts() {
   try {
     // Зчитуємо дані з файлу
     const data = await fs.readFile(contactsPath);
+
     // Перетворюємо рядок JSON у масив об'єктів
     const contacts = JSON.parse(data);
     // Повертаємо масив контактів
@@ -87,17 +88,25 @@ export async function updateContact(id, name, email, phone) {
     const data = await fs.readFile(contactsPath);
     let contacts = JSON.parse(data);
 
-    const foundElement = listElements.find((element) => element.id === id);
+    const foundElement = contacts.find((element) => element.id === id);
     if (foundElement === null) return null;
 
-    foundElement.name = name;
-    foundElement.email = email;
-    foundElement.phone = phone;
+    if (name) foundElement.name = name;
+    if (email) foundElement.email = email;
+    if (phone) foundElement.phone = phone;
 
     await fs.writeFile(contactsPath, JSON.stringify(contacts, null, 2));
     return foundElement;
   } catch (error) {
-    console.error("Unable to add a new contact:", error);
+    console.error("Unable to update a contact:", error);
     return null;
   }
 }
+
+export default {
+  listContacts,
+  getContactById,
+  removeContact,
+  addContact,
+  updateContact,
+};
