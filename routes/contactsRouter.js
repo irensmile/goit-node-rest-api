@@ -10,7 +10,7 @@ import validateBody from "../helpers/validateBody.js";
 import {
   createContactSchema,
   updateContactSchema,
-} from "../schemas/contactsSchemas.js";
+} from "../services/schemas/contactsSchemas.js";
 
 const contactsRouter = express.Router();
 
