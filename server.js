@@ -26,10 +26,12 @@ app.use((err, req, res, next) => {
 mongoose
   .connect(process.env.DB_HOST, {})
   .then(() => {
+    console.log("Database connection successful");
     app.listen(3000, () => {
       console.log("Server is running. Use our API on port: 3000");
     });
   })
   .catch((err) => {
     console.log(`Server not running. Error message: ${err.message}`);
+    process.exit(1);
   });
