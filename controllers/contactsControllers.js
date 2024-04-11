@@ -29,3 +29,10 @@ export const updateContact = async (req, res) => {
   if (updatedContact === null) res.status(404).json({ message: "Not found" });
   else res.status(200).json(updatedContact);
 };
+
+export const updateStatusContact = async (req, res) => {
+  const { id } = req.params;
+  const updatedContact = await contactsService.updateContact(id, req.body);
+  if (updatedContact === null) res.status(404).json({ message: "Not found" });
+  else res.status(200).json(updatedContact);
+};

@@ -15,6 +15,10 @@ export const updateContactSchema = Joi.object({
   favorite: Joi.boolean(),
 }).or("name", "email", "phone", "favorite");
 
+export const favoriteSchema = Joi.object({
+  favorite: Joi.boolean().required(),
+});
+
 const contactSchema = new Schema({
   name: {
     type: String,
