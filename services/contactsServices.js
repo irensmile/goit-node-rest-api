@@ -5,13 +5,21 @@ export async function listContacts() {
 }
 
 export async function getContactById(contactId) {
-  return await mongooseContactModel.findOne({ _id: contactId });
+  try {
+    return await mongooseContactModel.findOne({ _id: contactId });
+  } catch (error) {
+    return null;
+  }
 }
 
 export async function removeContact(contactId) {
-  return await mongooseContactModel.findOneAndDelete({
-    _id: contactId,
-  });
+  try {
+    return await mongooseContactModel.findOneAndDelete({
+      _id: contactId,
+    });
+  } catch (error) {
+    return null;
+  }
 }
 
 export async function addContact(newContact) {
@@ -19,11 +27,15 @@ export async function addContact(newContact) {
 }
 
 export async function updateContact(id, updatedContact) {
-  return await mongooseContactModel.findOneAndUpdate(
-    { _id: id },
-    updatedContact,
-    { new: true }
-  );
+  try {
+    return await mongooseContactModel.findOneAndUpdate(
+      { _id: id },
+      updatedContact,
+      { new: true }
+    );
+  } catch (error) {
+    return null;
+  }
 }
 
 export default {
