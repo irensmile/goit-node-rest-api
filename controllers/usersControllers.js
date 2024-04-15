@@ -5,7 +5,7 @@ import { mongooseUserModel } from "../schemas/userSchemas.js";
 export const register = async (req, res) => {
   const { email, password } = req.body;
 
-  if (mongooseUserModel.findOne({ email: email }) !== null) {
+  if ((await mongooseUserModel.findOne({ email: email })) !== null) {
     res.status(409).json({
       message: "Email in use",
     });
@@ -56,4 +56,17 @@ export const login = async (req, res) => {
       subscription: foundUser.subscription,
     },
   });
+};
+
+export const logout = async (req, res) => {
+  await mongooseUserModel.findByIdAndUpdate(
+    { _id: req.user._id },
+    { token: null }
+  );
+  res.status(204);
+};
+
+export const current = async (req, res) => {
+  const { email, subscription } = req.user;
+  res.json({ email, subscription });
 };
