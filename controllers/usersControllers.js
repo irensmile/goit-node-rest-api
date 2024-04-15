@@ -40,7 +40,7 @@ export const login = async (req, res) => {
     res.status(401).json("Email or password is wrong");
   }
 
-  const payload = { email: email };
+  const payload = { id: foundUser._id };
   const secret = process.env.SECRET_WORD;
 
   const generatedToken = jwt.sign(payload, secret);

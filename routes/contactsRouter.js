@@ -13,18 +13,28 @@ import {
   favoriteSchema,
   updateContactSchema,
 } from "../schemas/contactsSchemas.js";
+import { verifyAuth } from "../helpers/verifyAuth.js";
 
 const contactsRouter = express.Router();
 
-contactsRouter.get("/", getAllContacts);
+contactsRouter.get("/", verifyAuth, getAllContacts);
+contactsRouter.get("/:id", verifyAuth, getOneContact);
 
-contactsRouter.get("/:id", getOneContact);
+contactsRouter.delete("/:id", verifyAuth, deleteContact);
 
-contactsRouter.delete("/:id", deleteContact);
+contactsRouter.post(
+  "/",
+  verifyAuth,
+  validateBody(createContactSchema),
+  createContact
+);
 
-contactsRouter.post("/", validateBody(createContactSchema), createContact);
-
-contactsRouter.put("/:id", validateBody(updateContactSchema), updateContact);
+contactsRouter.put(
+  "/:id",
+  verifyAuth,
+  validateBody(updateContactSchema),
+  updateContact
+);
 
 contactsRouter.patch(
   "/:id/favorite",
