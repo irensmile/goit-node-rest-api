@@ -1,23 +1,59 @@
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 import { mongooseUserModel } from "../schemas/userSchemas.js";
 
 export const register = async (req, res) => {
-  if (mongooseUserModel.findOne({ email: req.body.email }) !== null) {
+  const { email, password } = req.body;
+
+  if (mongooseUserModel.findOne({ email: email }) !== null) {
     res.status(409).json({
       message: "Email in use",
     });
   }
 
-  bcrypt.hash(req.body.password, 10, async function (err, hash) {
-    const user = await mongooseUserModel.create({
-      password: hash,
-      email: req.body.email,
-    });
-    res.status(201).json({
-      user: {
-        email: user.email,
-        subscription: user.subscription,
-      },
-    });
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  const newUser = await mongooseUserModel.create({
+    password: hashedPassword,
+    email: email,
+  });
+
+  res.status(201).json({
+    user: {
+      email: newUser.email,
+      subscription: newUser.subscription,
+    },
+  });
+};
+
+export const login = async (req, res) => {
+  const { email, password } = req.body;
+
+  const foundUser = await mongooseUserModel.findOne({ email: email });
+
+  if (!foundUser) {
+    res.status(401).json("Email or password is wrong");
+  }
+  console.log(foundUser);
+  const isPasswordMatching = await bcrypt.compare(password, foundUser.password);
+  if (!isPasswordMatching) {
+    res.status(401).json("Email or password is wrong");
+  }
+
+  const payload = { email: email };
+  const secret = process.env.SECRET_WORD;
+
+  const generatedToken = jwt.sign(payload, secret);
+
+  await mongooseUserModel.findByIdAndUpdate(foundUser.id, {
+    token: generatedToken,
+  });
+
+  res.status(200).json({
+    token: generatedToken,
+    user: {
+      email: email,
+      subscription: foundUser.subscription,
+    },
   });
 };
