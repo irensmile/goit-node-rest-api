@@ -1,4 +1,4 @@
-import { mongooseContactModel } from "./schemas/contactsSchemas.js";
+import { mongooseContactModel } from "../schemas/contactsSchemas.js";
 
 export async function listContacts() {
   return await mongooseContactModel.find();
