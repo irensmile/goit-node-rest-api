@@ -19,21 +19,20 @@ export const deleteContact = async (req, res) => {
 };
 
 export const createContact = async (req, res, next) => {
-  const { name, email, phone } = req.body;
-
-  const newContact = await contactsService.addContact(name, email, phone);
+  const newContact = await contactsService.addContact(req.body);
   res.status(201).json(newContact);
 };
 
 export const updateContact = async (req, res) => {
   const { id } = req.params;
-  const { name, email, phone } = req.body;
-  const updatedContact = await contactsService.updateContact(
-    id,
-    name,
-    email,
-    phone
-  );
+  const updatedContact = await contactsService.updateContact(id, req.body);
+  if (updatedContact === null) res.status(404).json({ message: "Not found" });
+  else res.status(200).json(updatedContact);
+};
+
+export const updateStatusContact = async (req, res) => {
+  const { id } = req.params;
+  const updatedContact = await contactsService.updateContact(id, req.body);
   if (updatedContact === null) res.status(404).json({ message: "Not found" });
   else res.status(200).json(updatedContact);
 };
