@@ -34,7 +34,7 @@ export const login = async (req, res) => {
   if (!foundUser) {
     res.status(401).json("Email or password is wrong");
   }
-  console.log(foundUser);
+
   const isPasswordMatching = await bcrypt.compare(password, foundUser.password);
   if (!isPasswordMatching) {
     res.status(401).json("Email or password is wrong");
@@ -63,7 +63,7 @@ export const logout = async (req, res) => {
     { _id: req.user._id },
     { token: null }
   );
-  res.status(204);
+  res.status(204).json();
 };
 
 export const current = async (req, res) => {
