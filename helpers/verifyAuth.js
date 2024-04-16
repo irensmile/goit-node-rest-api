@@ -8,6 +8,7 @@ export const verifyAuth = async (req, res, next) => {
 
   if (bearer !== "Bearer" || !token) {
     res.status(401).json({ message: "Not authorized" });
+    return;
   }
 
   try {
