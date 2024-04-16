@@ -1,14 +1,13 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { mongooseUserModel } from "../schemas/userSchemas.js";
+import HttpError from "../helpers/HttpError.js";
 
 export const register = async (req, res) => {
   const { email, password } = req.body;
 
   if ((await mongooseUserModel.findOne({ email: email })) !== null) {
-    res.status(409).json({
-      message: "Email in use",
-    });
+    throw HttpError(409, "Email in use");
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -32,12 +31,12 @@ export const login = async (req, res) => {
   const foundUser = await mongooseUserModel.findOne({ email: email });
 
   if (!foundUser) {
-    res.status(401).json("Email or password is wrong");
+    throw HttpError(401, "Email or password is wrong");
   }
 
   const isPasswordMatching = await bcrypt.compare(password, foundUser.password);
   if (!isPasswordMatching) {
-    res.status(401).json("Email or password is wrong");
+    throw HttpError(401, "Email or password is wrong");
   }
 
   const payload = { id: foundUser._id };
