@@ -17,9 +17,11 @@ export const verifyAuth = async (req, res, next) => {
 
     if (!foundUser) {
       res.status(401).json({ message: "Not authorized" });
+      return;
     }
     if (foundUser.token != token) {
       res.status(401).json({ message: "Not authorized" });
+      return;
     }
 
     req.user = foundUser;

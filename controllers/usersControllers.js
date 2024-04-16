@@ -3,11 +3,12 @@ import jwt from "jsonwebtoken";
 import { mongooseUserModel } from "../schemas/userSchemas.js";
 import HttpError from "../helpers/HttpError.js";
 
-export const register = async (req, res) => {
+export const register = async (req, res, next) => {
   const { email, password } = req.body;
 
   if ((await mongooseUserModel.findOne({ email: email })) !== null) {
-    throw HttpError(409, "Email in use");
+    next(HttpError(409, "Email in use"));
+    return;
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -25,18 +26,20 @@ export const register = async (req, res) => {
   });
 };
 
-export const login = async (req, res) => {
+export const login = async (req, res, next) => {
   const { email, password } = req.body;
 
   const foundUser = await mongooseUserModel.findOne({ email: email });
 
   if (!foundUser) {
-    throw HttpError(401, "Email or password is wrong");
+    next(HttpError(401, "Email or password is wrong"));
+    return;
   }
 
   const isPasswordMatching = await bcrypt.compare(password, foundUser.password);
   if (!isPasswordMatching) {
-    throw HttpError(401, "Email or password is wrong");
+    next(HttpError(401, "Email or password is wrong"));
+    return;
   }
 
   const payload = { id: foundUser._id };
