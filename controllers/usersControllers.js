@@ -82,13 +82,13 @@ export const current = async (req, res) => {
 export const updateAvatar = async (req, res) => {
   const avatarDir = path.join(__dirname, "../", "public", "avatars");
   const { _id } = req.user;
-  const { path: tmpDir, originalName } = req.file;
-  const fileName = `${_id}_${originalName}`;
+  const { path: tmpUploadPath, originalname } = req.file;
+  const fileName = `${_id}_${originalname}`;
   const completeUploadPath = path.join(avatarDir, fileName);
 
-  const image = await Jimp.read(tmpDir);
-  await image.resize(250, 250).writeAsync(tmpDir);
-  await fs.rename(tmpDir, completeUploadPath);
+  const image = await Jimp.read(tmpUploadPath);
+  await image.resize(250, 250).writeAsync(tmpUploadPath);
+  await fs.rename(tmpUploadPath, completeUploadPath);
 
   const avatarURL = path.join("avatars", fileName);
   await mongooseUserModel.findByIdAndUpdate(_id, { avatarURL });
