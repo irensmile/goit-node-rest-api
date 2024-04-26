@@ -20,9 +20,10 @@ usersRouter.post("/users/logout", verifyAuth, logout);
 usersRouter.get("/users/current", verifyAuth, current);
 
 usersRouter.patch(
-  "/avatars",
+  "/users/avatars",
   verifyAuth,
-  upload.single("avatar", updateAvatar)
+  upload.single("avatar"),
+  updateAvatar
 );
 
 export default usersRouter;
