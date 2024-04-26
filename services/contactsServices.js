@@ -1,35 +1,39 @@
-import { mongooseContactModel } from "./schemas/contactsSchemas.js";
+import { mongooseContactModel } from "../schemas/contactsSchemas.js";
 
-export async function listContacts() {
-  return await mongooseContactModel.find();
+export async function listContacts(user) {
+  return await mongooseContactModel.find({ owner: user._id });
 }
 
-export async function getContactById(contactId) {
+export async function getContactById(contactId, user) {
   try {
-    return await mongooseContactModel.findOne({ _id: contactId });
-  } catch (error) {
-    return null;
-  }
-}
-
-export async function removeContact(contactId) {
-  try {
-    return await mongooseContactModel.findOneAndDelete({
+    return await mongooseContactModel.findOne({
       _id: contactId,
+      owner: user._id,
     });
   } catch (error) {
     return null;
   }
 }
 
-export async function addContact(newContact) {
-  return await mongooseContactModel.create(newContact);
+export async function removeContact(contactId, user) {
+  try {
+    return await mongooseContactModel.findOneAndDelete({
+      _id: contactId,
+      owner: user._id,
+    });
+  } catch (error) {
+    return null;
+  }
 }
 
-export async function updateContact(id, updatedContact) {
+export async function addContact(newContact, user) {
+  return await mongooseContactModel.create({ owner: user._id, ...newContact });
+}
+
+export async function updateContact(id, updatedContact, user) {
   try {
     return await mongooseContactModel.findOneAndUpdate(
-      { _id: id },
+      { _id: id, owner: user._id },
       updatedContact,
       { new: true }
     );
