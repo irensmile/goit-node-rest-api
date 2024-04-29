@@ -6,6 +6,8 @@ import HttpError from "../helpers/HttpError.js";
 import Jimp from "jimp";
 import path from "path";
 import { promises as fs } from "fs";
+import { fileURLToPath } from "url";
+import { dirname } from "path";
 
 // __dirname is not available with type=module
 const __filename = fileURLToPath(import.meta.url);
