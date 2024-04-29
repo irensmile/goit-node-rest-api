@@ -7,6 +7,10 @@ import Jimp from "jimp";
 import path from "path";
 import { promises as fs } from "fs";
 
+// __dirname is not available with type=module
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
 export const register = async (req, res, next) => {
   const { email, password } = req.body;
 
