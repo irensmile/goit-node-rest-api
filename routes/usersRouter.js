@@ -5,6 +5,8 @@ import {
   logout,
   current,
   updateAvatar,
+  verifyEmail,
+  resendVerifyEmail
 } from "../controllers/usersControllers.js";
 import validateBody from "../helpers/validateBody.js";
 import { registerUserSchema } from "../schemas/userSchemas.js";
@@ -25,5 +27,9 @@ usersRouter.patch(
   upload.single("avatar"),
   updateAvatar
 );
+
+usersRouter.get("/users/verify/:verificationToken", verifyEmail);
+
+usersRouter.post("/users/verify", resendVerifyEmail);
 
 export default usersRouter;

@@ -13,21 +13,15 @@ export const verifyAuth = async (req, res, next) => {
 
   try {
     const payload = jwt.verify(token, process.env.SECRET_WORD);
-
     const foundUser = await mongooseUserModel.findById(payload.id);
 
-    if (!foundUser) {
+    if (!foundUser || foundUser.token != token || !foundUser.verify) {
       res.status(401).json({ message: "Not authorized" });
       return;
     }
-    if (foundUser.token != token) {
-      res.status(401).json({ message: "Not authorized" });
-      return;
-    }
-
     req.user = foundUser;
-
     next();
+    
   } catch (error) {
     res.status(401).json({ message: "Not authorized" });
   }

@@ -8,10 +8,13 @@ import path from "path";
 import { promises as fs } from "fs";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
+import { nanoid } from "nanoid";
+import { sendValidationEmail } from "../helpers/email.js";
 
 // __dirname is not available with type=module
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+
 
 export const register = async (req, res, next) => {
   const { email, password } = req.body;
@@ -23,12 +26,16 @@ export const register = async (req, res, next) => {
 
   const hashedPassword = await bcrypt.hash(password, 10);
   const avatarURL = gravatar.url(email);
+  const verificationToken = nanoid();
 
   const newUser = await mongooseUserModel.create({
     password: hashedPassword,
     email: email,
     avatarURL,
+    verificationToken
   });
+
+  sendValidationEmail(email, verificationToken, req.protocol, req.get('host'));
 
   res.status(201).json({
     user: {
@@ -100,3 +107,32 @@ export const updateAvatar = async (req, res) => {
   await mongooseUserModel.findByIdAndUpdate(_id, { avatarURL });
   res.json({ avatarURL });
 };
+
+export const verifyEmail = async (req, res) => {
+  const { verificationToken } = req.params;
+  const user = mongooseUserModel.findOne({verificationToken});
+  if (!user){
+    throw HttpError(404, 'User not found');
+  }
+  mongooseUserModel.findByIdAndDelete(
+    { _id: user._id }, 
+    { verify: true, verificationToken: '' })
+  res.json({ message: 'Verification successful' })
+}
+
+export const resendVerifyEmail = async(req, res) => {
+  const { email } = req.body;
+  const user = mongooseUserModel.findOne({email});
+  
+  if (!user){
+    throw HttpError(404, { message: 'User not found' });
+  }
+  if (user.verify) {
+    throw HttpError(400, { message: "Verification has already been passed" });
+  }
+  const verificationToken = user.verificationToken;
+  sendValidationEmail(email, verificationToken, req.protocol, req.get('host'))
+
+  res.json({ message: "Verification email sent" });
+
+}
