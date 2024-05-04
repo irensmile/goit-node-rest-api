@@ -115,7 +115,8 @@ export const verifyEmail = async (req, res) => {
     res.status(404).json('User not found');
     return
   }
-  await mongooseUserModel.findByIdAndUpdate(user._id,  { verify: true});
+  await mongooseUserModel.findByIdAndUpdate(user._id, 
+    { verify: true, verificationToken: '' });
   res.json({ message: 'Verification successful' })
 }
 
