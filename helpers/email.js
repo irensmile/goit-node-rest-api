@@ -8,7 +8,7 @@ export const sendValidationEmail = async (email, verificationToken, protocol, ho
       to: email,
       from: process.env.EMAIL_FROM,
       subject: 'Please follow the link to finish registration',
-      html: `<a target="_blank" href="${url}"><a>Confirm my Email</a>`,
+      html: `<a target="_blank" href="${url}">Confirm my Email</a>`,
     };
     try {
       await sgMail.send(registerEmailMsg);

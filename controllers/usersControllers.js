@@ -35,7 +35,7 @@ export const register = async (req, res, next) => {
     verificationToken
   });
 
-  sendValidationEmail(email, verificationToken, req.protocol, req.get('host'));
+  await sendValidationEmail(email, verificationToken, req.protocol, req.get('host'));
 
   res.status(201).json({
     user: {
@@ -110,28 +110,27 @@ export const updateAvatar = async (req, res) => {
 
 export const verifyEmail = async (req, res) => {
   const { verificationToken } = req.params;
-  const user = mongooseUserModel.findOne({verificationToken});
+  const user = await mongooseUserModel.findOne({verificationToken});
   if (!user){
-    throw HttpError(404, 'User not found');
+    res.status(404).json('User not found');
+    return
   }
-  mongooseUserModel.findByIdAndDelete(
-    { _id: user._id }, 
-    { verify: true, verificationToken: '' })
+  await mongooseUserModel.findByIdAndUpdate(user._id,  { verify: true});
   res.json({ message: 'Verification successful' })
 }
 
 export const resendVerifyEmail = async(req, res) => {
   const { email } = req.body;
-  const user = mongooseUserModel.findOne({email});
+  const user = await mongooseUserModel.findOne({email});
   
   if (!user){
-    throw HttpError(404, { message: 'User not found' });
+    res.status(404).json({ message: 'User not found' });
   }
   if (user.verify) {
-    throw HttpError(400, { message: "Verification has already been passed" });
+    res.status(400).json({ message: "Verification has already been passed" });
   }
-  const verificationToken = user.verificationToken;
-  sendValidationEmail(email, verificationToken, req.protocol, req.get('host'))
+
+  await sendValidationEmail(email, user.verificationToken, req.protocol, req.get('host'))
 
   res.json({ message: "Verification email sent" });
 
