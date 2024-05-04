@@ -44,3 +44,7 @@ export const registerUserSchema = Joi.object({
   password: Joi.string().required(),
   email: Joi.string().email().required(),
 });
+
+export const verifyEmailchema = Joi.object({
+  email: Joi.string().email().required()
+})

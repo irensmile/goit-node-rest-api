@@ -9,7 +9,7 @@ import {
   resendVerifyEmail
 } from "../controllers/usersControllers.js";
 import validateBody from "../helpers/validateBody.js";
-import { registerUserSchema } from "../schemas/userSchemas.js";
+import { registerUserSchema, verifyEmailchema } from "../schemas/userSchemas.js";
 import { verifyAuth } from "../helpers/verifyAuth.js";
 import { upload } from "../helpers/upload.js";
 
@@ -30,6 +30,6 @@ usersRouter.patch(
 
 usersRouter.get("/users/verify/:verificationToken", verifyEmail);
 
-usersRouter.post("/users/verify", resendVerifyEmail);
+usersRouter.post("/users/verify", validateBody(verifyEmailchema), resendVerifyEmail);
 
 export default usersRouter;
