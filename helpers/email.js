@@ -1,4 +1,5 @@
 import sgMail from '@sendgrid/mail'
+import HttpError from "../helpers/HttpError.js";
 
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
@@ -13,7 +14,8 @@ export const sendValidationEmail = async (email, verificationToken, protocol, ho
     try {
       await sgMail.send(registerEmailMsg);
     } catch (error) {
-      throw HttpError(500, "Unable to send Email")
+        console.log(error);
+        throw HttpError(500, "Unable to send Email")
     }
   }
   
