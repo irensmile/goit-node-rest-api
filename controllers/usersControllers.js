@@ -126,9 +126,11 @@ export const resendVerifyEmail = async(req, res) => {
   
   if (!user){
     res.status(404).json({ message: 'User not found' });
+    return;
   }
   if (user.verify) {
     res.status(400).json({ message: "Verification has already been passed" });
+    return;
   }
 
   await sendValidationEmail(email, user.verificationToken, req.protocol, req.get('host'))
